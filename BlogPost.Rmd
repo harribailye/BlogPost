@@ -1,0 +1,70 @@
+---
+title: "Australian 2019/20 Fires - Should I Be Worried?"
+author: "By Harrison Bailye"
+date: "Published on `r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  fig.width = 8, 
+  fig.asp = 0.618, 
+  out.width = "80%",
+  fig.align = "center", 
+  root.dir = '../'
+)
+```
+
+
+```{r, include = FALSE}
+# Load in the required packages
+pacman::p_load(tidyverse, gutenbergr, remotes, devtools, ozmaps)
+
+```
+
+```{r, include = FALSE}
+# Install paletter from Github
+install_github("AndreaCirilloAC/paletter")
+pacman::p_load(paletter)
+
+# Load in the data 
+fires <- read_csv("fires.csv")
+
+```
+
+```{r, include = FALSE}
+# Create a colour palette 
+fire_colours <- create_palette(
+    image_path = "fire.jpg",
+               number_of_colors = 20,
+               type_of_variable = "categorical"
+)
+
+```
+
+```{r, include = FALSE}
+# Find the range of dates in the data set 
+min(fires$acq_date)
+max(fires$acq_date)
+
+```
+
+The summer of 2019/20 started off like any Aussie summer - slip, slop, slap and everyone headed off to the beach to enjoy the hot sun rays belting onto their bodies. However, this idealistic lifestyle quickly changed for many when the bush fires occurred. Bush fires roared all throughout the country, destroying anything that it came into contact with. Houses were destroyed, forests were charred, habitats were disrupted and lives were lost. This begs the question, what areas were most impacted by these fires and need our support?
+
+```{r, fig1, fig.cap = "A Plot of Affected Areas from the Bush Fires", echo = FALSE}
+# Plot the data onto a map of Australia 
+fires %>%
+  ggplot() + 
+  geom_sf(data = ozmap_states, colour = "black", fill = NA) + 
+  geom_point(aes(x = longitude, y = latitude, colour = brightness), size= 0.8) +
+  scale_color_gradientn("Brightness (Kelvin)", colours = fire_colours) +
+  coord_sf() + 
+  ggtitle("Bushfires in Australia from October 2019 to January 2020") +
+  xlab("Longitude") + ylab("Latitude")
+```
+
+Figure 1 illustrates where the fires occurred in the 2019/20 summer,"Black Summer", as recorded by the MODIS C6 NASA Satellite Instrument. Each data point represents the location of each bush fire that occurred, with the colour scale of these points representing the brightness of the fire.^[In an attempt to please Jono, and maybe even Matt, this beautiful colour pallet was extracted from a picture of a bush fire] The brightness was found by measuring each pixel from the satellite containing a fire and this was recorded in Kelvin. The figure illustrates that the majority of fires occurred in the northern parts of Queensland, Western Australia and Northern Territory, as well as along the coast line of New South Wales and Victoria. More locally, in South Australia, the complete devastation of Kangaroo Island can be seen with the whole island filled with different bush fires, of a high brightness. It is these areas of our country that most need our support to help recover physically, emotionally and economically from the fires. This map identifies the bush fire hot spots which is useful for determining optimal resource allocation and helps in developing a plan for Australia's next summer. Intuitively, from the graph we can see that the safest state to be living in is South Australia. So maybe it's time to relocate and come study Statistics at the Adelaide University, you will not regret it! 
